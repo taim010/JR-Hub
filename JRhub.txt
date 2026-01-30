@@ -1,0 +1,222 @@
+-- [[ JR HUB V1.0 - FINAL TRUE EDITION - FOR Taim_01000 ]] --
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+if game:GetService("CoreGui"):FindFirstChild("JR_Hub_Taim01000") then 
+    game:GetService("CoreGui").JR_Hub_Taim01000:Destroy() 
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "JR_Hub_Taim01000"
+ScreenGui.Parent = (gethui and gethui()) or game:GetService("CoreGui")
+
+-- [ نافذة المفتاح ]
+local KeyFrame = Instance.new("Frame")
+KeyFrame.Size = UDim2.new(0, 250, 0, 150); KeyFrame.Position = UDim2.new(0.5, -125, 0.4, 0)
+KeyFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20); KeyFrame.Active = true; KeyFrame.Draggable = true; KeyFrame.Parent = ScreenGui
+Instance.new("UICorner", KeyFrame)
+
+local KeyTitle = Instance.new("TextLabel")
+KeyTitle.Size = UDim2.new(1, 0, 0, 40); KeyTitle.BackgroundTransparency = 1; KeyTitle.Text = "اكتب المفتاح"
+KeyTitle.TextColor3 = Color3.new(1, 1, 1); KeyTitle.Font = Enum.Font.SourceSansBold; KeyTitle.TextSize = 18; KeyTitle.Parent = KeyFrame
+
+local KeyInput = Instance.new("TextBox")
+KeyInput.Size = UDim2.new(0.8, 0, 0, 35); KeyInput.Position = UDim2.new(0.1, 0, 0.4, 0)
+KeyInput.PlaceholderText = "..."; KeyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+KeyInput.TextColor3 = Color3.new(1, 1, 1); KeyInput.Parent = KeyFrame; Instance.new("UICorner", KeyInput)
+
+local CheckBtn = Instance.new("TextButton")
+CheckBtn.Size = UDim2.new(0.5, 0, 0, 35); CheckBtn.Position = UDim2.new(0.25, 0, 0.75, 0)
+CheckBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0); CheckBtn.Text = "تفعيل"; CheckBtn.TextColor3 = Color3.new(1, 1, 1); CheckBtn.Parent = KeyFrame
+Instance.new("UICorner", CheckBtn)
+
+-- [ القائمة الرئيسية ]
+local MainFrame = Instance.new("Frame")
+MainFrame.Parent = ScreenGui; MainFrame.Size = UDim2.new(0, 260, 0, 500); MainFrame.Position = UDim2.new(0.5, -130, 0.2, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15); MainFrame.Visible = false; MainFrame.Active = true; MainFrame.Draggable = true
+Instance.new("UICorner", MainFrame)
+
+local MainTitle = Instance.new("TextLabel")
+MainTitle.Size = UDim2.new(1, 0, 0, 40); MainTitle.BackgroundTransparency = 1; MainTitle.Text = "JR HUB V1.0"; MainTitle.TextColor3 = Color3.new(1, 1, 1)
+MainTitle.Font = Enum.Font.SourceSansBold; MainTitle.TextSize = 22; MainTitle.Parent = MainFrame
+
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Parent = ScreenGui; ToggleBtn.Size = UDim2.new(0, 65, 0, 65); ToggleBtn.Position = UDim2.new(0, 10, 0.5, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0); ToggleBtn.Text = "JR"; ToggleBtn.TextColor3 = Color3.new(1, 1, 1)
+ToggleBtn.Font = Enum.Font.SourceSansBold; ToggleBtn.TextSize = 40; ToggleBtn.Visible = false; ToggleBtn.Draggable = true
+Instance.new("UICorner", ToggleBtn)
+
+CheckBtn.MouseButton1Click:Connect(function()
+    if KeyInput.Text == "DMT" then KeyFrame:Destroy(); MainFrame.Visible = true; ToggleBtn.Visible = true 
+    else CheckBtn.Text = "خطأ!"; task.wait(1); CheckBtn.Text = "تفعيل" end
+end)
+ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
+
+local NameInput = Instance.new("TextBox")
+NameInput.Size = UDim2.new(0.9, 0, 0, 35); NameInput.Position = UDim2.new(0.05, 0, 0.12, 0)
+NameInput.PlaceholderText = "اسم اللاعب..."; NameInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+NameInput.TextColor3 = Color3.new(1, 1, 1); NameInput.Parent = MainFrame; Instance.new("UICorner", NameInput)
+
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size = UDim2.new(1, 0, 0.8, 0); Scroll.Position = UDim2.new(0, 0, 0.18, 0)
+Scroll.BackgroundTransparency = 1; Scroll.CanvasSize = UDim2.new(0, 0, 4.5, 0); Scroll.Parent = MainFrame
+local UIList = Instance.new("UIListLayout", Scroll)
+UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center; UIList.Padding = UDim.new(0, 8); UIList.SortOrder = Enum.SortOrder.LayoutOrder
+
+local function createBtn(text, color, order)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(0, 210, 0, 40); b.BackgroundColor3 = color; b.Text = text .. ": OFF"
+    b.TextColor3 = Color3.new(1, 1, 1); b.Font = Enum.Font.SourceSansBold; b.LayoutOrder = order; b.Parent = Scroll
+    Instance.new("UICorner", b); return b
+end
+
+local function createNote(text, color, order)
+    local n = Instance.new("TextLabel")
+    n.Size = UDim2.new(0, 210, 0, 25); n.BackgroundTransparency = 1; n.Text = "⚠️ " .. text
+    n.TextColor3 = color; n.Font = Enum.Font.SourceSansBold; n.TextSize = 12; n.LayoutOrder = order; n.Parent = Scroll
+    return n
+end
+
+local function getBestTarget()
+    local text = NameInput.Text:lower()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and (p.Name:lower():find(text) or p.DisplayName:lower():find(text)) then return p end
+    end
+    return nil
+end
+
+-- [[ الأزرار والملاحظات في مكانها ]]
+local lagBtn = createBtn("لاق", Color3.fromRGB(150, 0, 0), 1)
+createNote("يجب أن تمسك الكنبه اولا", Color3.fromRGB(0, 200, 255), 2)
+local killBtn = createBtn("قتل بالكنبه", Color3.fromRGB(0, 85, 255), 3)
+local flingBtn = createBtn("فلنق بالكنبه", Color3.fromRGB(30, 30, 30), 4)
+createNote("يجب أن تصعد للمركبه اولا", Color3.fromRGB(255, 200, 0), 5)
+local carBtn = createBtn("فلنق بالمركبه", Color3.fromRGB(200, 0, 0), 6)
+local viewBtn = createBtn("مشاهدة اللاعب", Color3.fromRGB(0, 120, 200), 7)
+local tpBtn = createBtn("انتقل إلى", Color3.fromRGB(0, 150, 0), 8)
+local antiSitBtn = createBtn("مضاد الجلوس", Color3.fromRGB(60, 60, 60), 9)
+local antiBangBtn = createBtn("مضاد بانق", Color3.fromRGB(40, 40, 40), 10)
+
+-- [[ 1. مضاد بانق (المراوغة الصافية الأصلية) ]]
+local isAntiBang = false
+antiBangBtn.MouseButton1Click:Connect(function()
+    isAntiBang = not isAntiBang
+    antiBangBtn.Text = isAntiBang and "مضاد بانق: ON ✅" or "مضاد بانق: OFF"
+    antiBangBtn.BackgroundColor3 = isAntiBang and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(40, 40, 40)
+end)
+
+RunService.Heartbeat:Connect(function()
+    if isAntiBang then
+        local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local targetHrp = player.Character.HumanoidRootPart
+                    if (hrp.Position - targetHrp.Position).Magnitude < 8 then
+                        local originalCF = hrp.CFrame
+                        hrp.CFrame = originalCF * CFrame.new(0, -100, 0)
+                        task.wait(0.01)
+                        hrp.CFrame = originalCF * CFrame.new(0, 100, 0)
+                        task.wait(0.01)
+                        hrp.CFrame = originalCF
+                        hrp.Velocity = Vector3.new(0, 0, 0)
+                        hrp.RotVelocity = Vector3.new(0, 0, 0)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- [[ 2. مضاد الجلوس ON/OFF ]]
+local isAntiSit = false
+antiSitBtn.MouseButton1Click:Connect(function()
+    isAntiSit = not isAntiSit
+    antiSitBtn.Text = isAntiSit and "مضاد الجلوس: ON" or "مضاد الجلوس: OFF"
+    antiSitBtn.BackgroundColor3 = isAntiSit and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(60, 60, 60)
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, not isAntiSit)
+        if isAntiSit then LocalPlayer.Character.Humanoid.Sit = false end
+    end
+end)
+
+-- [[ 3. القتل والفلنق واللاق (الأصلي القوي) ]]
+local isKill, connKill = false, nil
+killBtn.MouseButton1Click:Connect(function()
+    if isKill then isKill = false; if connKill then connKill:Disconnect() end killBtn.Text = "قتل بالكنبه: OFF"; killBtn.BackgroundColor3 = Color3.fromRGB(0, 85, 255)
+    else
+        local t = getBestTarget()
+        if t and t.Character then
+            isKill = true; killBtn.Text = "قتل بالكنبه: ON"; killBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0); local depth = 0
+            connKill = RunService.Heartbeat:Connect(function()
+                local tr, th = t.Character:FindFirstChild("HumanoidRootPart"), t.Character:FindFirstChildOfClass("Humanoid")
+                if tr and th then
+                    if th.Sit then depth -= 2.5; LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(tr.Position.X, tr.Position.Y + depth, tr.Position.Z)
+                    else LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(tr.Position + Vector3.new(math.random(-1,1), -3.5, math.random(-1,1)), tr.Position) end
+                end
+            end)
+        end
+    end
+end)
+
+local isFling, connFling = false, nil
+flingBtn.MouseButton1Click:Connect(function()
+    if isFling then isFling = false; if connFling then connFling:Disconnect() end flingBtn.Text = "فلنق بالكنبه: OFF"; flingBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    else
+        local t = getBestTarget()
+        if t and t.Character then
+            isFling = true; flingBtn.Text = "فلنق بالكنبه: ON"; flingBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+            connFling = RunService.Heartbeat:Connect(function()
+                local tr, th = t.Character:FindFirstChild("HumanoidRootPart"), t.Character:FindFirstChildOfClass("Humanoid")
+                if tr and th then
+                    if th.Sit then LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1e9, 1e9, 1e9); LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(1e4, 1e4, 1e4)
+                    else LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(tr.Position + Vector3.new(math.random(-2,2), -3.5, math.random(-2,2)), tr.Position) end
+                end
+            end)
+        end
+    end
+end)
+
+local activeLag = false
+lagBtn.MouseButton1Click:Connect(function()
+    activeLag = not activeLag; lagBtn.Text = activeLag and "لاق: ON" or "لاق: OFF"
+    lagBtn.BackgroundColor3 = activeLag and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(150, 0, 0)
+    if activeLag and LocalPlayer.Character then LocalPlayer.Character:PivotTo(CFrame.new(-129.81, 21.15, 251.32)) end
+end)
+RunService.RenderStepped:Connect(function()
+    if activeLag then
+        local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if activeLag and obj:IsA("BasePart") and (hrp.Position - obj.Position).Magnitude < 12 and obj.Position.Y < 26 then
+                local cd = obj:FindFirstChildOfClass("ClickDetector") or obj.Parent:FindFirstChildOfClass("ClickDetector")
+                if cd then task.spawn(function() fireclickdetector(cd) end) end
+                firetouchinterest(hrp, obj, 0) firetouchinterest(hrp, obj, 1)
+            end
+        end
+    end
+end)
+
+-- [ بقية الوظائف ]
+local isCar, connCar = false, nil
+carBtn.MouseButton1Click:Connect(function()
+    if isCar then isCar = false; if connCar then connCar:Disconnect() end carBtn.Text = "فلنق بالمركبه: OFF"; carBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    else
+        local t, s = getBestTarget(), (LocalPlayer.Character and LocalPlayer.Character.Humanoid.SeatPart)
+        if s and t then isCar = true; carBtn.Text = "فلنق بالمركبه: ON"; carBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+            connCar = RunService.Heartbeat:Connect(function() if t.Character then s.CFrame = t.Character.HumanoidRootPart.CFrame end end)
+        end
+    end
+end)
+
+local isView = false
+viewBtn.MouseButton1Click:Connect(function()
+    isView = not isView
+    if isView then
+        local t = getBestTarget()
+        if t and t.Character then Camera.CameraSubject = t.Character.Humanoid; viewBtn.Text = "مشاهدة: ON"; viewBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0) else isView = false end
+    else Camera.CameraSubject = LocalPlayer.Character.Humanoid; viewBtn.Text = "مشاهدة: OFF"; viewBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200) end
+end)
+
+tpBtn.MouseButton1Click:Connect(function() local t = getBestTarget() if t and t.Character then LocalPlayer.Character.HumanoidRootPart.CFrame = t.Character.HumanoidRootPart.CFrame end end)
